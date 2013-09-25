@@ -217,6 +217,18 @@ class rsyslog (
           fail("rsyslog supports redhat like systems with major release of 5 and 6 and you have ${::lsbmajdistrelease}")
         }
       }
+        file { 'rsyslog_sysconfig':
+            ensure  => file,
+            content => template("rsyslog/${sysconfig_erb}"),
+            path    => $sysconfig_path,
+            owner   => $sysconfig_owner,
+            group   => $sysconfig_group,
+            mode    => $sysconfig_mode,
+            require => Package['rsyslog_package'],
+            notify  => Service['rsyslog_daemon'],
+        }
+    }
+    'Debian': {
     }
     default: {
       fail("rsyslog supports osfamily redhat and you have ${::osfamily}")
@@ -303,17 +315,6 @@ class rsyslog (
     owner   => $config_owner,
     group   => $config_group,
     mode    => $config_mode,
-    require => Package['rsyslog_package'],
-    notify  => Service['rsyslog_daemon'],
-  }
-
-  file { 'rsyslog_sysconfig':
-    ensure  => file,
-    content => template("rsyslog/${sysconfig_erb}"),
-    path    => $sysconfig_path,
-    owner   => $sysconfig_owner,
-    group   => $sysconfig_group,
-    mode    => $sysconfig_mode,
     require => Package['rsyslog_package'],
     notify  => Service['rsyslog_daemon'],
   }
