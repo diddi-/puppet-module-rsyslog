@@ -201,9 +201,6 @@ class rsyslog (
   $kernel_target            = '/var/log/messages',
 ) {
 
-  # ensures that sysklogd is absent, which is needed on EL5
-  require 'sysklogd'
-
   case $::osfamily {
     'redhat': {
       case $::lsbmajdistrelease {
@@ -216,7 +213,9 @@ class rsyslog (
         default: {
           fail("rsyslog supports redhat like systems with major release of 5 and 6 and you have ${::lsbmajdistrelease}")
         }
-      }
+      } 
+        # ensures that sysklogd is absent, which is needed on EL5
+        require 'sysklogd'
         file { 'rsyslog_sysconfig':
             ensure  => file,
             content => template("rsyslog/${sysconfig_erb}"),
